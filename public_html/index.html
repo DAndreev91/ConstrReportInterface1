@@ -13,33 +13,163 @@ and open the template in the editor.
         <link href="bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
         <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
         <script type="text/javascript">
+            var tepList = [];
             $(document).ready(function() {
-                $("#div1").on("click", function() {
-                    $("#img1").toggle("slow");
+                $("#div1").on("dblclick", function() {
+                    $(".page-lock").toggle(50).delay(1000);
+                    $(".loader").toggle(200).delay(1000);
+                    $("#img1").toggle(1000).delay(1000);
+                    $(".page-lock").toggle(50).delay(1000);
+                    $(".loader").toggle(200); 
+                });
+                
+                $("#div2 tr").on("dblclick", function() {
+                    $(this).fadeOut(500);
+                    console.log($(this).children("td").data("value"));
+                    tepList.push($(this).children("td").data("value"));
+                    $("#div3 table").append($("<tr>"+ $(this).html() + "</tr>").hide().fadeIn(500));
+                    for (var i in tepList) {
+                        console.log(i + " " + tepList[i]);
+                    }
+                });
+                
+                $("#div3 tr").on("dblclick", function() {
+                    $(this).fadeOut(500);
+                    var indx = tepList.indexOf($(this).children("td").data("value"));
+                    tepList.splice(indx, 1);
+                    $("#div2 table").append($("<tr>"+ $(this).html() + "</tr>").hide().fadeIn(500));
+                    for (var i in tepList) {
+                        console.log(i + " " + tepList[i]);
+                    }
                 });
             });
         </script>
         <style type="text/css">
             #div1 {
-                position: relative;
-                left: 100px;
-                top: 100px;
-                width: 300px;
-                height: 300px;
-                cursor: pointer;
+                position: absolute;
+                left: 10%;
+                top: 10%;
+                width: 30%;
+            }
+            
+            #div2 {
+                position: absolute;
+                right: 10%;
+                top: 10%;
+                width: 30%;
+            }
+            
+            #div3 {
+                position: absolute;
+                left: 35%;
+                top: 60%;
+                width: 30%;
             }
             
             #img1 {
                 display: none;
+                z-index: 0;
+                position: absolute;
+                left: 0;
+                top: 0;
+                right: 0;
+                bottom: 0;
             }
+            
+            .loader {
+                position: absolute;
+                left: 45%;
+                top: 45%;
+                border: 16px solid #f3f3f3; /* Light grey */
+                border-top: 16px solid #3498aa; /* Blue */
+                border-radius: 50%;
+                width: 5%;
+                height: 5%;
+                animation: spin 1.5s ease infinite;
+                display: none;
+                z-index: 10;
+            }
+            
+            @keyframes spin {
+                0% { transform: rotate(0deg)}
+                100% { transform: rotate(360deg)}
+            }
+            
+            .page-lock {
+                position: absolute;
+                left: 0;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                background: #AAA;
+                z-index: 5;
+                opacity: 0.5;
+                width: 100%;
+                height: 100%;
+                display: none;
+            }
+            
+            tr {
+                cursor: pointer;
+            }
+            
+            
         </style>
     </head>
     <body>
-        <div>TODO write content1</div>
-        <div id="div1">It's image of corgy
-            <img id="img1" src='pict/2.jpg' />
+        
+        <div id="div1">
+            <div class="page-lock"></div>
+            <div class="loader"></div>
+            <table class="table table-hover table-responsive" id="dttable">
+                <tr>
+                    <td>OKS</td>
+                </tr>
+                <tr>
+                    <td>AGR</td>
+                </tr>
+                <tr>
+                    <td>MGE</td>
+                </tr>
+                <tr>
+                    <td>ZOS</td>
+                </tr>
+                <tr>
+                    <td data-value="123">PPT</td>
+                </tr>
+            </table>
         </div>
         
+        <div id="div2">
+            <div class="page-lock"></div>
+            <div class="loader"></div>
+            <table class="table table-hover table-responsive" id="dttable">
+                <tr>
+                    <td data-value="1">OKS</td>
+                </tr>
+                <tr>
+                    <td data-value="22">AGR</td>
+                </tr>
+                <tr>
+                    <td data-value="333">MGE</td>
+                </tr>
+                <tr>
+                    <td data-value="321">ZOS</td>
+                </tr>
+                <tr>
+                    <td data-value="56">PPT</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div id="div3">
+            <div class="page-lock"></div>
+            <div class="loader"></div>
+            <table class="table table-hover table-responsive" id="dttable">
+                <tbody>
+                </tbody>
+            </table>
+        </div>
     
     </body>
 </html>
