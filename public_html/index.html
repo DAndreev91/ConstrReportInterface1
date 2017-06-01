@@ -14,16 +14,26 @@ and open the template in the editor.
         <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
         <script type="text/javascript">
             var tepList = [];
+            var u;
             $(document).ready(function() {
-                $("#div1").on("dblclick", function() {
-                    $(".page-lock").toggle(50).delay(1000);
-                    $(".loader").toggle(200).delay(1000);
-                    $("#img1").toggle(1000).delay(1000);
-                    $(".page-lock").toggle(50).delay(1000);
-                    $(".loader").toggle(200); 
+                $(document).on("dblclick", "#div1 tr", function() {
+                    $(this).ajax({
+                        beforeSend: function() {
+                            $("#div1 .page-lock, #div2 .page-lock").toggle(50).delay(1000);
+                            $("#div1 .loader, #div2 .loader").toggle(200).delay(1000);
+                        },
+                        url: "dfile.getDocTypeForConstrRep",
+                        data: u,
+                        success: function(html) {
+                            $(this).children("table").append(html);
+                            $("#div1 .page-lock,#div2 .page-lock").toggle(50).delay(1000);
+                            $("#div1 .loader, #div2 .loader").toggle(200); 
+                        }
+                        
+                    });
                 });
                 
-                $("#div2 tr").on("dblclick", function() {
+                $(document).on("dblclick", "#div2 tr", function() {
                     $(this).fadeOut(500);
                     console.log($(this).children("td").data("value"));
                     tepList.push($(this).children("td").data("value"));
@@ -33,14 +43,26 @@ and open the template in the editor.
                     }
                 });
                 
-                $("#div3 tr").on("dblclick", function() {
+                $(document).on("dblclick", "#div3 tr", function() {
                     $(this).fadeOut(500);
                     var indx = tepList.indexOf($(this).children("td").data("value"));
                     tepList.splice(indx, 1);
                     $("#div2 table").append($("<tr>"+ $(this).html() + "</tr>").hide().fadeIn(500));
+                    
                     for (var i in tepList) {
                         console.log(i + " " + tepList[i]);
                     }
+                });
+                
+                $(document).on("click", "#div4 #sub", function() {
+                    console.log(tepList);
+                });
+                
+                $(document).on("click", "#div1 #back", function() {
+                    $("#div1 .page-lock, #div2 .page-lock").toggle(50).delay(1000);
+                    $("#div1 .loader, #div2 .loader").toggle(200).delay(1000);
+                    $("#div1 .page-lock,#div2 .page-lock").toggle(50).delay(1000);
+                    $("#div1 .loader, #div2 .loader").toggle(200); 
                 });
             });
         </script>
@@ -50,6 +72,8 @@ and open the template in the editor.
                 left: 10%;
                 top: 10%;
                 width: 30%;
+                max-height:40%;
+                overflow-y:scroll;
             }
             
             #div2 {
@@ -57,13 +81,25 @@ and open the template in the editor.
                 right: 10%;
                 top: 10%;
                 width: 30%;
+                max-height:40%;
+                overflow-y:scroll;
             }
             
             #div3 {
                 position: absolute;
-                left: 35%;
+                left: 25%;
                 top: 60%;
                 width: 30%;
+                max-height:40%;
+                overflow-y:scroll;
+            }
+            
+            #div4 {
+                position: absolute;
+                right: 10%;
+                top: 60%;
+                width: 30%;
+                max-height:40%;
             }
             
             #img1 {
@@ -118,57 +154,97 @@ and open the template in the editor.
     </head>
     <body>
         
+        
+        
         <div id="div1">
             <div class="page-lock"></div>
             <div class="loader"></div>
-            <table class="table table-hover table-responsive" id="dttable">
-                <tr>
-                    <td>OKS</td>
-                </tr>
-                <tr>
-                    <td>AGR</td>
-                </tr>
-                <tr>
-                    <td>MGE</td>
-                </tr>
-                <tr>
-                    <td>ZOS</td>
-                </tr>
-                <tr>
-                    <td data-value="123">PPT</td>
-                </tr>
-            </table>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-default btn-lg" id="back">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                </button>
+            </div>
+            <div class="col-md-10">
+                <table class="table table-hover table-responsive" id="dttable">
+                    <tr>
+                        <td>OKS</td>
+                    </tr>
+                    <tr>
+                        <td>AGR</td>
+                    </tr>
+                    <tr>
+                        <td>MGE</td>
+                    </tr>
+                    <tr>
+                        <td>ZOS</td>
+                    </tr>
+                    <tr>
+                        <td data-value="123">PPT</td>
+                    </tr>
+                    <tr>
+                        <td data-value="123">PPT</td>
+                    </tr>
+                    <tr>
+                        <td data-value="123">PPT</td>
+                    </tr>
+                    <tr>
+                        <td data-value="123">PPT</td>
+                    </tr>
+                    <tr>
+                        <td data-value="123">PPT</td>
+                    </tr>
+                    <tr>
+                        <td data-value="123">PPT</td>
+                    </tr>
+                    <tr>
+                        <td data-value="123">PPT</td>
+                    </tr>
+                    <tr>
+                        <td data-value="123">PPT</td>
+                    </tr>
+                    <tr>
+                        <td data-value="123">PPT</td>
+                    </tr>
+                    <tr>
+                        <td data-value="123">PPT</td>
+                    </tr>
+                </table>
+            </div>
         </div>
         
         <div id="div2">
             <div class="page-lock"></div>
             <div class="loader"></div>
-            <table class="table table-hover table-responsive" id="dttable">
-                <tr>
-                    <td data-value="1">OKS</td>
-                </tr>
-                <tr>
-                    <td data-value="22">AGR</td>
-                </tr>
-                <tr>
-                    <td data-value="333">MGE</td>
-                </tr>
-                <tr>
-                    <td data-value="321">ZOS</td>
-                </tr>
-                <tr>
-                    <td data-value="56">PPT</td>
-                </tr>
-            </table>
+            <div class="col-md-10">
+                <table class="table table-hover table-responsive" id="dttable">
+                    <tr>
+                        <td data-value="1">OKS</td>
+                    </tr>
+                    <tr>
+                        <td data-value="22">AGR</td>
+                    </tr>
+                    <tr>
+                        <td data-value="333">MGE</td>
+                    </tr>
+                    <tr>
+                        <td data-value="321">ZOS</td>
+                    </tr>
+                    <tr>
+                        <td data-value="56">PPT</td>
+                    </tr>
+                </table>
+            </div>
         </div>
         
         <div id="div3">
-            <div class="page-lock"></div>
-            <div class="loader"></div>
             <table class="table table-hover table-responsive" id="dttable">
                 <tbody>
                 </tbody>
             </table>
+        </div>
+        
+        <div id="div4">
+            <button type="button" class="btn btn-primary" id="sub">Submit</button>
         </div>
     
     </body>
