@@ -21,14 +21,55 @@ and open the template in the editor.
             $(document).ready(function() {
                 
                 $.ajax({
+                    url: "dfile.pget_doctep",
+                    data: { "oid": id,
+                            "tid": 305855907,
+                            "valLen": 32000,
+                            "return_type": 2},
+                    success: function(html) {
+                        $("#ParentDocType").val(html);
+                    }
+                });
+                
+                $.ajax({
+                    url: "dfile.pget_doctep",
+                    data: { "oid": id,
+                            "tid": 305854177,
+                            "valLen": 32000,
+                            "return_type": 2},
+                    success: function(html) {
+                        $("#ReportName").val(html);
+                    }
+                });
+                
+                docType = $("#ParentDocType").val();
+                console.log(docType);
+                
+                $.ajax({
+                    url: "dfile.getDocTypeForConstrRep",
+                    data: { "did": id },
+                    success: function(html) {
+                        $("#div1 table").append(html);
+                    }
+                });
+                
+                $.ajax({
+                    url: "dfile.getTepsForConstrRep",
+                    data: { "did": id,
+                            "str": docType},
+                    success: function(html) {
+                        $("#div2 table").append(html);
+                    }
+                });
+                
+                $.ajax({
                     url: "dfile.getTepsWithinConstrRep",
-                    data: id,
+                    data: { "did": id },
                     success: function(html) {
                         $("#div3 table").append(html);
                     }
                 });
                 
-                docType = $("ParentDocType").val();
                 $(document).on("dblclick", "#div1 tr", function() {
                     docTypeBack = docType;
                     if (docType == null) {
@@ -39,20 +80,20 @@ and open the template in the editor.
                     }
                     $("#div1 .page-lock, #div2 .page-lock").toggle(50).delay(1000);
                     $("#div1 .loader, #div2 .loader").toggle(200).delay(1000);
-                    $("#div1").ajax({
+                    $.ajax({
                         url: "dfile.getDocTypeForConstrRep",
                         data: {"did" : id,
                                "str": docType},
                         success: function(html) {
-                            $(this).children("table").append(html);
+                            $("#div1 table").html(html);
                         }
                     });
-                    $("#div2").ajax({
+                    $.ajax({
                         url: "dfile.getTepsForConstrRep",
                         data: {"did" : id,
                                "str": docType},
                         success: function(html) {
-                            $("#div2").children("table").append(html);
+                            $("#div2 table").html(html);
                         }
                     });
                     $("#div1 .page-lock,#div2 .page-lock").toggle(50).delay(1000);
@@ -88,7 +129,7 @@ and open the template in the editor.
                     $("#div3 tr").children("td").each( function() {
                         tepList.push($(this).data("value"));
                     });
-                    $(this).ajax({
+                    $.ajax({
                         url: "dfile.saveConstrRepTeps",
                         data: {
                             tepList: tepList
@@ -222,42 +263,44 @@ and open the template in the editor.
                 <div class="page-lock"></div>
                 <div class="loader"></div>
                 <table class="table table-hover table-responsive" id="dttable">
-                    <tr>
-                        <td>OKS</td>
-                    </tr>
-                    <tr>
-                        <td>AGR</td>
-                    </tr>
-                    <tr>
-                        <td>MGE</td>
-                    </tr>
-                    <tr>
-                        <td>ZOS</td>
-                    </tr>
-                    <tr>
-                        <td data-value="123">PPT</td>
-                    </tr>
-                    <tr>
-                        <td data-value="123">PPT</td>
-                    </tr>
-                    <tr>
-                        <td data-value="123">PPT</td>
-                    </tr>
-                    <tr>
-                        <td data-value="123">PPT</td>
-                    </tr>
-                    <tr>
-                        <td data-value="123">PPT</td>
-                    </tr>
-                    <tr>
-                        <td data-value="123">PPT</td>
-                    </tr>
-                    <tr>
-                        <td data-value="123">PPT</td>
-                    </tr>
-                    <tr>
-                        <td data-value="123">PPT</td>
-                    </tr>
+                    <tbody>
+                        <tr>
+                            <td>OKS</td>
+                        </tr>
+                        <tr>
+                            <td>AGR</td>
+                        </tr>
+                        <tr>
+                            <td>MGE</td>
+                        </tr>
+                        <tr>
+                            <td>ZOS</td>
+                        </tr>
+                        <tr>
+                            <td data-value="123">PPT</td>
+                        </tr>
+                        <tr>
+                            <td data-value="123">PPT</td>
+                        </tr>
+                        <tr>
+                            <td data-value="123">PPT</td>
+                        </tr>
+                        <tr>
+                            <td data-value="123">PPT</td>
+                        </tr>
+                        <tr>
+                            <td data-value="123">PPT</td>
+                        </tr>
+                        <tr>
+                            <td data-value="123">PPT</td>
+                        </tr>
+                        <tr>
+                            <td data-value="123">PPT</td>
+                        </tr>
+                        <tr>
+                            <td data-value="123">PPT</td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         
@@ -280,21 +323,23 @@ and open the template in the editor.
                 <div class="page-lock"></div>
                 <div class="loader"></div>
                 <table class="table table-hover table-responsive" id="dttable">
-                    <tr>
-                        <td data-value="1">OKS</td>
-                    </tr>
-                    <tr>
-                        <td data-value="22">AGR</td>
-                    </tr>
-                    <tr>
-                        <td data-value="333">MGE</td>
-                    </tr>
-                    <tr>
-                        <td data-value="321">ZOS</td>
-                    </tr>
-                    <tr>
-                        <td data-value="56">PPT</td>
-                    </tr>
+                    <tbody>
+                        <tr>
+                            <td data-value="1">OKS</td>
+                        </tr>
+                        <tr>
+                            <td data-value="22">AGR</td>
+                        </tr>
+                        <tr>
+                            <td data-value="333">MGE</td>
+                        </tr>
+                        <tr>
+                            <td data-value="321">ZOS</td>
+                        </tr>
+                        <tr>
+                            <td data-value="56">PPT</td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         </div>
