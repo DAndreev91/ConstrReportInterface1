@@ -16,47 +16,87 @@ and open the template in the editor.
             var tepList = [];
             var docType;
             var docTypeBack;
+            var tepId;
+            var finalVal;
             $(document).ready(function() {
+                
+                $.ajax({
+                    url: "dfile.getTepsWithinConstrRep",
+                    data: id,
+                    success: function(html) {
+                        $("#div3 table").append(html);
+                    }
+                });
+                
+                docType = $("ParentDocType").val();
                 $(document).on("dblclick", "#div1 tr", function() {
-                    $(this).ajax({
-                        beforeSend: function() {
-                            $("#div1 .page-lock, #div2 .page-lock").toggle(50).delay(1000);
-                            $("#div1 .loader, #div2 .loader").toggle(200).delay(1000);
-                        },
+                    docTypeBack = docType;
+                    if (docType == null) {
+                        docType = $(this).children("td").data("value");
+                        $("#ParentDocType").val(docType);
+                    } else {
+                        docType = docType + "&" + $(this).children("td").data("value");
+                    }
+                    $("#div1 .page-lock, #div2 .page-lock").toggle(50).delay(1000);
+                    $("#div1 .loader, #div2 .loader").toggle(200).delay(1000);
+                    $("#div1").ajax({
                         url: "dfile.getDocTypeForConstrRep",
-                        data: u,
+                        data: {"did" : id,
+                               "str": docType},
                         success: function(html) {
                             $(this).children("table").append(html);
-                            $("#div1 .page-lock,#div2 .page-lock").toggle(50).delay(1000);
-                            $("#div1 .loader, #div2 .loader").toggle(200); 
                         }
-                        
                     });
+                    $("#div2").ajax({
+                        url: "dfile.getTepsForConstrRep",
+                        data: {"did" : id,
+                               "str": docType},
+                        success: function(html) {
+                            $("#div2").children("table").append(html);
+                        }
+                    });
+                    $("#div1 .page-lock,#div2 .page-lock").toggle(50).delay(1000);
+                    $("#div1 .loader, #div2 .loader").toggle(200); 
+                        
+                    
                 });
                 
                 $(document).on("dblclick", "#div2 tr", function() {
                     $(this).fadeOut(500);
                     console.log($(this).children("td").data("value"));
-                    tepList.push($(this).children("td").data("value"));
-                    $("#div3 table").append($("<tr>"+ $(this).html() + "</tr>").hide().fadeIn(500));
-                    for (var i in tepList) {
-                        console.log(i + " " + tepList[i]);
-                    }
+                    tepId = $(this).children("td").data("value");
+                    finalVal = "{" + docType + "_" + tepId + "}";
+                    $("#div3 table").append($("<tr>"+ $(this).children("td").data("value", finalVal).html() + "</tr>").hide().fadeIn(500));
+                    console.log($(this).children("td").data("value", finalVal).html());
                 });
                 
                 $(document).on("dblclick", "#div3 tr", function() {
                     $(this).fadeOut(500);
                     var indx = tepList.indexOf($(this).children("td").data("value"));
                     tepList.splice(indx, 1);
-                    $("#div2 table").append($("<tr>"+ $(this).html() + "</tr>").hide().fadeIn(500));
-                    
-                    for (var i in tepList) {
-                        console.log(i + " " + tepList[i]);
-                    }
+                    var val = $(this).children("td").data("value");
+                    val = val.substring(val.indexOf("_"));
+                    val = val.replace("}");
+                    $("#div2 table").append($("<tr>"+ $(this).children("td").data("value", val).html() + "</tr>").hide().fadeIn(500));
+                    console.log($(this).children("td").data("value", val).html());
                 });
                 
                 $(document).on("click", "#div4 #sub", function() {
-                    console.log(tepList);
+                    for (var i in tepList) {
+                        console.log(i + " " + tepList[i]);
+                    };
+                    $("#div3 tr").children("td").each( function() {
+                        tepList.push($(this).data("value"));
+                    });
+                    $(this).ajax({
+                        url: "dfile.saveConstrRepTeps",
+                        data: {
+                            tepList: tepList
+                        },
+                        success: function(html) {
+                            alert(html);
+                        }
+                    });
                 });
                 
                 $(document).on("click", "#div1 #back", function() {
@@ -73,7 +113,7 @@ and open the template in the editor.
                 left: 10%;
                 top: 10%;
                 width: 30%;
-                max-height:40%;
+                height:40%;
                 overflow-y:scroll;
             }
             
@@ -82,7 +122,7 @@ and open the template in the editor.
                 right: 10%;
                 top: 10%;
                 width: 30%;
-                max-height:40%;
+                height:40%;
                 overflow-y:scroll;
             }
             
@@ -115,15 +155,29 @@ and open the template in the editor.
                 max-height:40%;
             }
             
-            .loader {
-                position: absolute;
-                left: 45%;
-                top: 45%;
+            #div1 .loader {
+                position: fixed;
+                left: 26%;
+                top: 27%;
                 border: 16px solid #f3f3f3; /* Light grey */
                 border-top: 16px solid #3498aa; /* Blue */
                 border-radius: 50%;
-                width: 5%;
-                height: 5%;
+                width: 2%;
+                height: 4%;
+                animation: spin 1.5s ease infinite;
+                display: none;
+                z-index: 10;
+            }
+            
+            #div2 .loader {
+                position: fixed;
+                right: 26%;
+                top: 27%;
+                border: 16px solid #f3f3f3; /* Light grey */
+                border-top: 16px solid #3498aa; /* Blue */
+                border-radius: 50%;
+                width: 2%;
+                height: 4%;
                 animation: spin 1.5s ease infinite;
                 display: none;
                 z-index: 10;
@@ -159,14 +213,14 @@ and open the template in the editor.
         
         
         <div id="div1">
-            <div class="page-lock"></div>
-            <div class="loader"></div>
             <div class="col-md-2">
                 <button type="button" class="btn btn-default btn-lg" id="back">
                     <span class="glyphicon glyphicon-chevron-left"></span>
                 </button>
             </div>
             <div class="col-md-10">
+                <div class="page-lock"></div>
+                <div class="loader"></div>
                 <table class="table table-hover table-responsive" id="dttable">
                     <tr>
                         <td>OKS</td>
@@ -222,9 +276,9 @@ and open the template in the editor.
 
         
         <div id="div2">
-            <div class="page-lock"></div>
-            <div class="loader"></div>
             <div class="col-md-10">
+                <div class="page-lock"></div>
+                <div class="loader"></div>
                 <table class="table table-hover table-responsive" id="dttable">
                     <tr>
                         <td data-value="1">OKS</td>
