@@ -14,10 +14,11 @@ and open the template in the editor.
         <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
         <script type="text/javascript">
             var tepList = [];
-            var docType;
+            var docType = 123123;
             var docTypeBack;
             var tepId;
             var finalVal;
+            var id = 123;
             $(document).ready(function() {
                 
                 $.ajax({
@@ -42,14 +43,14 @@ and open the template in the editor.
                     }
                 });
                 
-                docType = $("#ParentDocType").val();
+                //docType = $("#ParentDocType").val();
                 console.log(docType);
                 
                 $.ajax({
                     url: "dfile.getDocTypeForConstrRep",
                     data: { "did": id },
                     success: function(html) {
-                        $("#div1 table").append(html);
+                        $("#div1 table tbody").append(html);
                     }
                 });
                 
@@ -58,7 +59,7 @@ and open the template in the editor.
                     data: { "did": id,
                             "str": docType},
                     success: function(html) {
-                        $("#div2 table").append(html);
+                        $("#div2 table tbody").append(html);
                     }
                 });
                 
@@ -66,7 +67,7 @@ and open the template in the editor.
                     url: "dfile.getTepsWithinConstrRep",
                     data: { "did": id },
                     success: function(html) {
-                        $("#div3 table").append(html);
+                        $("#div3 table tbody").append(html);
                     }
                 });
                 
@@ -85,7 +86,7 @@ and open the template in the editor.
                         data: {"did" : id,
                                "str": docType},
                         success: function(html) {
-                            $("#div1 table").html(html);
+                            $("#div1 table tbody").html(html);
                         }
                     });
                     $.ajax({
@@ -93,22 +94,36 @@ and open the template in the editor.
                         data: {"did" : id,
                                "str": docType},
                         success: function(html) {
-                            $("#div2 table").html(html);
+                            $("#div2 table tbody").html(html);
                         }
                     });
                     $("#div1 .page-lock,#div2 .page-lock").toggle(50).delay(1000);
                     $("#div1 .loader, #div2 .loader").toggle(200); 
-                        
-                    
+                    var val = $(this).children("td").data("value");
+                    var finVal;
+                    if (val.toString().indexOf("_") >= 0) {
+                        finVal = val;
+                    } else {
+                        finVal = docType;
+                    };
+                    $.ajax({
+                        url: "dfile.getDocTypeForTeps",
+                        data: {
+                            "dtid_str": finVal
+                        },
+                        success: function(html) {
+                            $("#div5").html(html);
+                        }
+                    });
                 });
                 
                 $(document).on("dblclick", "#div2 tr", function() {
                     $(this).fadeOut(500);
-                    console.log($(this).children("td").data("value"));
                     tepId = $(this).children("td").data("value");
                     finalVal = "{" + docType + "_" + tepId + "}";
-                    $("#div3 table").append($("<tr>"+ $(this).children("td").data("value", finalVal).html() + "</tr>").hide().fadeIn(500));
-                    console.log($(this).children("td").data("value", finalVal).html());
+                    var clObj = $(this).clone();
+                    $(clObj).children("td").attr("data-value", finalVal);
+                    $("#div3 table").append($("<tr>"+ $(clObj).html() + "</tr>").hide().fadeIn(500));
                 });
                 
                 $(document).on("dblclick", "#div3 tr", function() {
@@ -117,9 +132,10 @@ and open the template in the editor.
                     tepList.splice(indx, 1);
                     var val = $(this).children("td").data("value");
                     val = val.substring(val.indexOf("_"));
-                    val = val.replace("}");
-                    $("#div2 table").append($("<tr>"+ $(this).children("td").data("value", val).html() + "</tr>").hide().fadeIn(500));
-                    console.log($(this).children("td").data("value", val).html());
+                    val = val.replace("}", "").replace("_", "");
+                    var clObj = $(this).clone();
+                    $(clObj).children("td").attr("data-value", val);
+                    $("#div2 table").append($("<tr>"+ $(clObj).html() + "</tr>").hide().fadeIn(500));
                 });
                 
                 $(document).on("click", "#div4 #sub", function() {
@@ -141,10 +157,52 @@ and open the template in the editor.
                 });
                 
                 $(document).on("click", "#div1 #back", function() {
+                    if (docType.toString().indexOf("&") < 0 ) {
+                        return;
+                    }
+                    docType = docType.toString().slice(0,docType.toString().lastIndexOf("&"));
+                    console.log(docType);
                     $("#div1 .page-lock, #div2 .page-lock").toggle(50).delay(1000);
                     $("#div1 .loader, #div2 .loader").toggle(200).delay(1000);
+                    $.ajax({
+                        url: "dfile.getDocTypeForConstrRep",
+                        data: {"did" : id,
+                               "str": docType},
+                        success: function(html) {
+                            $("#div1 table tbody").html(html);
+                        }
+                    });
+                    $.ajax({
+                        url: "dfile.getTepsForConstrRep",
+                        data: {"did" : id,
+                               "str": docType},
+                        success: function(html) {
+                            $("#div2 table tbody").html(html);
+                        }
+                    });
                     $("#div1 .page-lock,#div2 .page-lock").toggle(50).delay(1000);
                     $("#div1 .loader, #div2 .loader").toggle(200); 
+                });
+                
+                $(document).on("click", "tr", function() {
+                    var val = $(this).children("td").data("value");
+                    console.log("val " + val);
+                    var finVal;
+                    if (val.toString().indexOf("_") >= 0) {
+                        finVal = val;
+                    } else {
+                        finVal = docType;
+                    };
+                    console.log("finVal: " + finVal);
+                    $.ajax({
+                        url: "dfile.getDocTypeForTeps",
+                        data: {
+                            "dtid_str": finVal
+                        },
+                        success: function(html) {
+                            $("#div5").html(html);
+                        }
+                    });
                 });
             });
         </script>
@@ -179,9 +237,18 @@ and open the template in the editor.
             #div4 {
                 position: absolute;
                 right: 48%;
-                top: 60%;
+                top: 70%;
                 width: 4%;
                 max-height:40%;
+            }
+            
+            #div5 {
+                position: absolute;
+                left: 42%;
+                top: 25%;
+                width: 16%;
+                max-height:40%;
+                text-align: center;
             }
             
             #back {
@@ -353,6 +420,10 @@ and open the template in the editor.
         
         <div id="div4">
             <button type="button" class="btn btn-primary" id="sub">Submit</button>
+        </div>
+        
+        <div id="div5">
+            <p>it's a small text</p>
         </div>
     
     </body>
