@@ -13,7 +13,7 @@ and open the template in the editor.
         <link href="bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
         <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
         <script type="text/javascript">
-            var tepList = [];
+            var tepList = {};
             var docType = 123123;
             var docTypeBack;
             var tepId;
@@ -68,6 +68,11 @@ and open the template in the editor.
                     data: { "did": id },
                     success: function(html) {
                         $("#div3 table tbody").append(html);
+                        var m = 0;
+                        $("#div3 tr").children("td").each( function() {
+                            tepList[m] = $(this).data("value");
+                            m++;
+                        });
                     }
                 });
                 
@@ -128,10 +133,10 @@ and open the template in the editor.
                 
                 $(document).on("dblclick", "#div3 tr", function() {
                     $(this).fadeOut(500);
-                    var indx = tepList.indexOf($(this).children("td").data("value"));
-                    tepList.splice(indx, 1);
+                    /*var indx = tepList.indexOf($(this).children("td").data("value"));
+                    tepList.splice(indx, 1);*/
                     var val = $(this).children("td").data("value");
-                    val = val.substring(val.indexOf("_"));
+                    val = val.substring(val.toString().indexOf("_"));
                     val = val.replace("}", "").replace("_", "");
                     var clObj = $(this).clone();
                     $(clObj).children("td").attr("data-value", val);
@@ -139,17 +144,20 @@ and open the template in the editor.
                 });
                 
                 $(document).on("click", "#div4 #sub", function() {
-                    for (var i in tepList) {
-                        console.log(i + " " + tepList[i]);
-                    };
-                    $("#div3 tr").children("td").each( function() {
-                        tepList.push($(this).data("value"));
+                    tepList = {};
+                    var m = 0;
+                    $("#div3 tr:visible").children("td").each( function() {
+                        console.log($(this).data("value"));
+                        tepList[m] = $(this).data("value");
+                        m++;
                     });
+                    /*for (var i in tepList) {
+                        console.log(i + " " + tepList[i]);
+                    };*/
                     $.ajax({
                         url: "dfile.saveConstrRepTeps",
-                        data: {
-                            tepList: tepList
-                        },
+                        data: tepList,
+                        type: 'post',
                         success: function(html) {
                             alert(html);
                         }
@@ -186,14 +194,14 @@ and open the template in the editor.
                 
                 $(document).on("click", "tr", function() {
                     var val = $(this).children("td").data("value");
-                    console.log("val " + val);
+                    //console.log("val " + val);
                     var finVal;
                     if (val.toString().indexOf("_") >= 0) {
                         finVal = val;
                     } else {
                         finVal = docType;
                     };
-                    console.log("finVal: " + finVal);
+                    //console.log("finVal: " + finVal);
                     $.ajax({
                         url: "dfile.getDocTypeForTeps",
                         data: {
