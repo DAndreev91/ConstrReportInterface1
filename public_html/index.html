@@ -29,6 +29,26 @@ and open the template in the editor.
                             "return_type": 2},
                     success: function(html) {
                         $("#ParentDocType").val(html);
+                        if ($("#ParentDocType").val().length > 0) {
+                            docType = $("#ParentDocType").val();
+                        }
+                        $.ajax({
+                            url: "dfile.getDocTypeForConstrRep",
+                            data: { "did": id,
+                                    "str": docType },
+                            success: function(html) {
+                                $("#div1 table tbody").append(html);
+                            }
+                        });
+
+                        $.ajax({
+                            url: "dfile.getTepsForConstrRep",
+                            data: { "did": id,
+                                    "str": docType},
+                            success: function(html) {
+                                $("#div2 table tbody").append(html);
+                            }
+                        });
                     }
                 });
                 
@@ -40,26 +60,6 @@ and open the template in the editor.
                             "return_type": 2},
                     success: function(html) {
                         $("#ReportName").val(html);
-                    }
-                });
-                
-                //docType = $("#ParentDocType").val();
-                console.log(docType);
-                
-                $.ajax({
-                    url: "dfile.getDocTypeForConstrRep",
-                    data: { "did": id },
-                    success: function(html) {
-                        $("#div1 table tbody").append(html);
-                    }
-                });
-                
-                $.ajax({
-                    url: "dfile.getTepsForConstrRep",
-                    data: { "did": id,
-                            "str": docType},
-                    success: function(html) {
-                        $("#div2 table tbody").append(html);
                     }
                 });
                 
@@ -133,8 +133,6 @@ and open the template in the editor.
                 
                 $(document).on("dblclick", "#div3 tr", function() {
                     $(this).fadeOut(500);
-                    /*var indx = tepList.indexOf($(this).children("td").data("value"));
-                    tepList.splice(indx, 1);*/
                     var val = $(this).children("td").data("value");
                     val = val.substring(val.toString().indexOf("_"));
                     val = val.replace("}", "").replace("_", "");
@@ -146,19 +144,22 @@ and open the template in the editor.
                 $(document).on("click", "#div4 #sub", function() {
                     tepList = {};
                     var m = 0;
+                    tepList[m] = did;
+                    m++;
+                    tepList[m] = $("#ParentDocType").val();
+                    m++;
+                    tepList[m] = $("#ReportName").val();
+                    m++;
                     $("#div3 tr:visible").children("td").each( function() {
-                        console.log($(this).data("value"));
                         tepList[m] = $(this).data("value");
                         m++;
                     });
-                    /*for (var i in tepList) {
-                        console.log(i + " " + tepList[i]);
-                    };*/
                     $.ajax({
                         url: "dfile.saveConstrRepTeps",
                         data: tepList,
                         type: 'post',
                         success: function(html) {
+                            $(document).append
                             alert(html);
                         }
                     });
@@ -189,7 +190,17 @@ and open the template in the editor.
                         }
                     });
                     $("#div1 .page-lock,#div2 .page-lock").toggle(50).delay(1000);
-                    $("#div1 .loader, #div2 .loader").toggle(200); 
+                    $("#div1 .loader, #div2 .loader").toggle(200);
+                    var finVal = docType;
+                    $.ajax({
+                        url: "dfile.getDocTypeForTeps",
+                        data: {
+                            "dtid_str": finVal
+                        },
+                        success: function(html) {
+                            $("#div5").html(html);
+                        }
+                    });
                 });
                 
                 $(document).on("click", "tr", function() {
@@ -433,6 +444,21 @@ and open the template in the editor.
         <div id="div5">
             <p>it's a small text</p>
         </div>
+        
+        <div class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Сохранение изменений</h4>
+                    </div>
+                    <div class="modal-body" id="resultFrame">
+                      <p>One fine body&hellip;</p>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
     
     </body>
 </html>
