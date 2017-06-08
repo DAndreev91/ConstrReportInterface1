@@ -128,6 +128,10 @@ and open the template in the editor.
                     finalVal = "{" + docType + "_" + tepId + "}";
                     var clObj = $(this).clone();
                     $(clObj).children("td").attr("data-value", finalVal);
+                    var h = $(clObj).children("td").html().toString();
+                    $(clObj).children("td").html("<div class='col-sm-10'>" +
+                                            "<input type='text' class='form-control input-sm' placeholder='" + h +
+                                            "' data-toggle='tooltip' data-placement='right' title='Название'></div>");
                     $("#div3 table").append($("<tr>"+ $(clObj).html() + "</tr>").hide().fadeIn(500));
                 });
                 
@@ -138,20 +142,23 @@ and open the template in the editor.
                     val = val.replace("}", "").replace("_", "");
                     var clObj = $(this).clone();
                     $(clObj).children("td").attr("data-value", val);
+                    var h = $(clObj).children("td").children("div").children("input").prop("placeholder");
+                    $(clObj).children("td").html(h);
                     $("#div2 table").append($("<tr>"+ $(clObj).html() + "</tr>").hide().fadeIn(500));
                 });
                 
                 $(document).on("click", "#div4 #sub", function() {
                     tepList = {};
                     var m = 0;
-                    tepList[m] = did;
+                    tepList[m] = id;
                     m++;
                     tepList[m] = $("#ParentDocType").val();
                     m++;
                     tepList[m] = $("#ReportName").val();
                     m++;
                     $("#div3 tr:visible").children("td").each( function() {
-                        tepList[m] = $(this).data("value");
+                        var name = $(this).children("div").children("input").val();
+                        tepList[m] = $(this).data("value") + name;
                         m++;
                     });
                     $.ajax({
@@ -159,8 +166,8 @@ and open the template in the editor.
                         data: tepList,
                         type: 'post',
                         success: function(html) {
-                            $(document).append
-                            alert(html);
+                                $("#resultFrame").html(html);
+                                $("#modalRes").modal();
                         }
                     });
                 });
@@ -223,6 +230,13 @@ and open the template in the editor.
                         }
                     });
                 });
+                
+                $(document).on('mouseenter', '#div3 input', function() {
+                    $(this).tooltip('show');
+                });
+                $(document).on('mouseleave', '#div3 input', function() {
+                    $(this).tooltip('hide');
+                });
             });
         </script>
         <style type="text/css">
@@ -274,7 +288,7 @@ and open the template in the editor.
                 position: fixed;
             }
             
-            form {
+            #form1 {
                 position: absolute;
                 left: 10%;
                 top: 55%;
@@ -333,6 +347,30 @@ and open the template in the editor.
                 cursor: pointer;
             }
             
+            p {
+                text-align:center;
+                vertical-align: bottom;
+            }
+            
+            .filterdiv {
+                border-radius: 42px;
+                transition: .3s linear;
+                float: right;
+                position: relative
+            }
+            .filterdiv:focus {
+                width: 165%;
+            }
+            
+            .filt {
+                width: auto;
+                float: right;
+            }
+            
+            .form-control-feedback {
+                right:10%;
+            }
+            
         </style>
     </head>
     <body>
@@ -348,6 +386,13 @@ and open the template in the editor.
             <div class="col-md-10">
                 <div class="page-lock"></div>
                 <div class="loader"></div>
+                <form role="form" id="filt">
+                    <div class="form-group col-md-6 col-md-offset-6 ">
+                        <label class="sr-only" for="filterdiv">Поиск</label>
+                        <input type="search" class="form-control filterdiv" placeholder="Поиск по типам">
+                        <span class="glyphicon glyphicon-search form-control-feedback"></span>
+                    </div>
+                </form>
                 <table class="table table-hover table-responsive" id="dttable">
                     <tbody>
                         <tr>
@@ -392,7 +437,7 @@ and open the template in the editor.
         
         </div>
         
-        <form role="form">
+        <form role="form" id="form1">
             <div class="form-group">
               <label for="ReportName">Название отчета</label>
               <input type="text" class="form-control" id="ReportName" placeholder="Введите название отчета">
@@ -408,13 +453,20 @@ and open the template in the editor.
             <div class="col-md-10">
                 <div class="page-lock"></div>
                 <div class="loader"></div>
+                <div class="form-group col-md-6 col-md-offset-6 ">
+                        <label class="sr-only" for="filterdiv">Поиск</label>
+                        <input type="search" class="form-control filterdiv" placeholder="Поиск по типам">
+                        <span class="glyphicon glyphicon-search form-control-feedback"></span>
+                    </div>
                 <table class="table table-hover table-responsive" id="dttable">
                     <tbody>
                         <tr>
                             <td data-value="1">OKS</td>
                         </tr>
                         <tr>
-                            <td data-value="22">AGR</td>
+                            <td data-value="22">
+                                AGR AGRNOE
+                            </td>
                         </tr>
                         <tr>
                             <td data-value="333">MGE</td>
@@ -445,19 +497,19 @@ and open the template in the editor.
             <p>it's a small text</p>
         </div>
         
-        <div class="modal fade">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        <h4 class="modal-title">Сохранение изменений</h4>
-                    </div>
-                    <div class="modal-body" id="resultFrame">
-                      <p>One fine body&hellip;</p>
-                    </div>
-                </div><!-- /.modal-content -->
-            </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
+        <div class="modal fade" id="modalRes">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">Что-то там</h4>
+                        </div>
+                        <div class="modal-body" id="resultFrame">
+                          <p>One fine body&hellip;</p>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
 
     
     </body>
