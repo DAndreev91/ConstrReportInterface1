@@ -231,6 +231,29 @@ and open the template in the editor.
                     });
                 });
                 
+                $(document).on("change", "form .filterinp", function() {
+                    var url;
+                    var target;
+                    if ($(this).data("target")=="first") {
+                        target = '#div1 table tbody';
+                        url = 'dfile.getDocTypeForConstrRep';
+                    } if ($(this).data("target")=="second") {
+                        target = '#div2 table tbody';
+                        url = 'dfile.getTepsForConstrRep';
+                    };
+                    $.ajax({
+                        url: url,
+                        data: {
+                            "dtid_str": ""
+                        },
+                        success: function(html) {
+                            $(target).html(html);
+                        }
+                    });
+                    alert(url);
+                    
+                });
+                
                 $(document).on('mouseenter', '#div3 input', function() {
                     $(this).tooltip('show');
                 });
@@ -352,19 +375,14 @@ and open the template in the editor.
                 vertical-align: bottom;
             }
             
-            .filterdiv {
+            .filterinp {
                 border-radius: 42px;
                 transition: .3s linear;
                 float: right;
                 position: relative
             }
-            .filterdiv:focus {
+            .filterinp:focus {
                 width: 165%;
-            }
-            
-            .filt {
-                width: auto;
-                float: right;
             }
             
             .form-control-feedback {
@@ -386,10 +404,10 @@ and open the template in the editor.
             <div class="col-md-10">
                 <div class="page-lock"></div>
                 <div class="loader"></div>
-                <form role="form" id="filt">
+                <form role="form">
                     <div class="form-group col-md-6 col-md-offset-6 ">
                         <label class="sr-only" for="filterdiv">Поиск</label>
-                        <input type="search" class="form-control filterdiv" placeholder="Поиск по типам">
+                        <input type="search" class="form-control filterinp" data-target="first" placeholder="Поиск по типам">
                         <span class="glyphicon glyphicon-search form-control-feedback"></span>
                     </div>
                 </form>
@@ -453,11 +471,13 @@ and open the template in the editor.
             <div class="col-md-10">
                 <div class="page-lock"></div>
                 <div class="loader"></div>
-                <div class="form-group col-md-6 col-md-offset-6 ">
+                <form role="form">
+                    <div class="form-group col-md-6 col-md-offset-6 ">
                         <label class="sr-only" for="filterdiv">Поиск</label>
-                        <input type="search" class="form-control filterdiv" placeholder="Поиск по типам">
+                        <input type="search" class="form-control filterinp" data-target="second" placeholder="Поиск по типам">
                         <span class="glyphicon glyphicon-search form-control-feedback"></span>
                     </div>
+                </form>
                 <table class="table table-hover table-responsive" id="dttable">
                     <tbody>
                         <tr>
