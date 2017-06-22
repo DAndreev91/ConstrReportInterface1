@@ -240,11 +240,11 @@ and open the template in the editor.
                     } if ($(this).data("target")=="second") {
                         target = '#div2 table tbody';
                         url = 'dfile.getTepsForConstrRep';
-                    };
-                    $.ajax({
+                    }; 
+                   $.ajax({
                         url: url,
-                        data: {
-                            "dtid_str": ""
+                        data: { 
+                           "dtid_str": ""
                         },
                         success: function(html) {
                             $(target).html(html);
@@ -270,6 +270,11 @@ and open the template in the editor.
                 width: 30%;
                 height:40%;
                 overflow-y:scroll;
+            }
+                
+            #dttable {
+                position: relative;
+                top: 45px;
             }
             
             #div2 {
@@ -388,6 +393,11 @@ and open the template in the editor.
             .form-control-feedback {
                 right:10%;
             }
+                
+            .search_form {
+                position: fixed;
+                z-index: 10;
+            }
             
         </style>
     </head>
@@ -404,8 +414,8 @@ and open the template in the editor.
             <div class="col-md-10">
                 <div class="page-lock"></div>
                 <div class="loader"></div>
-                <form role="form">
-                    <div class="form-group col-md-6 col-md-offset-6 ">
+                <form role="form" class="search_form col-sm-3">
+                    <div class="form-group col-sm-6 col-sm-offset-6 ">
                         <label class="sr-only" for="filterdiv">Поиск</label>
                         <input type="search" class="form-control filterinp" data-target="first" placeholder="Поиск по типам">
                         <span class="glyphicon glyphicon-search form-control-feedback"></span>
@@ -471,8 +481,8 @@ and open the template in the editor.
             <div class="col-md-10">
                 <div class="page-lock"></div>
                 <div class="loader"></div>
-                <form role="form">
-                    <div class="form-group col-md-6 col-md-offset-6 ">
+                <form role="form" class="search_form col-sm-3">
+                    <div class="form-group col-sm-6 col-sm-offset-6 ">
                         <label class="sr-only" for="filterdiv">Поиск</label>
                         <input type="search" class="form-control filterinp" data-target="second" placeholder="Поиск по типам">
                         <span class="glyphicon glyphicon-search form-control-feedback"></span>
